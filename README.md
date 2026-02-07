@@ -1,2 +1,3 @@
 # Student-performance-ml-model
 this ml model predict student performance and recommend career
+This project implements an end-to-end Student Performance & Career Recommendation System using Machine Learning. A Random Forest classifier is trained on a dataset of 1000 student records to predict academic performance based on attendance, math scores, science scores, and coding interest. The project includes data preprocessing, feature encoding, model training, and evaluation. The trained model is saved using pickle and deployed as an interactive Streamlit web application that provides real-time performance predictions and career recommendations
