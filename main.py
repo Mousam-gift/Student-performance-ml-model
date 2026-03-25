@@ -1,5 +1,11 @@
 import pickle
 import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score, classification_report
+from sklearn.preprocessing import LabelEncoder
+
  # load data sets
 df = pd.read_csv("student_data_1000.csv")
 #view first 5 row
@@ -7,19 +13,14 @@ print(df.head())
 #data set info
 print(df.info())
 
-from sklearn.preprocessing import LabelEncoder
-encoder = LabelEncoder()
-df["coding_interest"] = encoder.fit_transform(df["coding_interest"])
-df["final_performance"] = encoder.fit_transform(df["final_performance"])
+
+coding_encoder = LabelEncoder()
+performance_encoder = LabelEncoder()
+df["coding_interest"] = coding_encoder.fit_transform(df["coding_interest"])
+df["final_performance"] = performance_encoder.fit_transform(df["final_performance"])
 
 print(df)
 
-
-
-from sklearn.model_selection import train_test_split
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import accuracy_score
 # Separate features (x) and target (y)
 x = df.drop("final_performance", axis=1)
 y = df["final_performance"]
@@ -31,18 +32,27 @@ dt.fit(x_train, y_train)
 #Test Decision Tree accuracy
 dt_pred = dt.predict(x_test)
 dt_acc = accuracy_score(y_test, dt_pred)
-#Train Random Forest model (IMPORTANT)
+
+#Train Random Forest model
+
 rf = RandomForestClassifier(n_estimators=100,random_state=42)
 rf.fit(x_train, y_train)
+model_data = {
+ "model": rf,
+ "coding_encoder": coding_encoder,
+ "performance_encoder": performance_encoder
+}
 
 with open("student_performance_model.pkl","wb")as file:
-    pickle.dump(rf,file)
+    pickle.dump(model_data, file)
 print("Model saved successfully!")
 
 
 # Test Random Forest accuracy
 rf_pred= rf.predict(x_test)
 rf_acc= accuracy_score(y_test, rf_pred)
+print("\nRandom Forest Classification Report:\n")
+print(classification_report(y_test, rf_pred))
 #Compare results
 print("\nModel Accuracy Comparison")
 print("Decision Tree Accuracy:", dt_acc)
@@ -60,7 +70,7 @@ def recommend_career(attendance, math_score, science_score, coding_interest, per
     
 
 sample = x_test.iloc[0]
-predicted_performance = rf.predict([sample])[0]
+predicted_performance = rf.predict(sample.to_frame().T)[0]
 
 career = recommend_career(
     attendance=sample["attendance"],
