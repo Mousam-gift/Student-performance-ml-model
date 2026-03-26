@@ -37,14 +37,16 @@ dt_acc = accuracy_score(y_test, dt_pred)
 
 rf = RandomForestClassifier(n_estimators=100,random_state=42)
 rf.fit(x_train, y_train)
+
 model_data = {
  "model": rf,
  "coding_encoder": coding_encoder,
  "performance_encoder": performance_encoder
 }
 
-with open("student_performance_model.pkl","wb")as file:
+with open("student_performance_model.pkl","wb") as file:
     pickle.dump(model_data, file)
+
 print("Model saved successfully!")
 
 
@@ -61,7 +63,7 @@ print("Random Forest Accuracy:", rf_acc)
 def recommend_career(attendance, math_score, science_score, coding_interest, performance):
     if performance == 1 and coding_interest == 1:
         return "Software Developer / Data Science"
-    elif performance == 1 and science_score == 1:
+    elif performance == 1 and science_score >= 1:
         return "Engineering / Research"
     elif performance == 0:
         return "skill-based IT / Support roles"
@@ -83,7 +85,11 @@ career = recommend_career(
 print("\nPredicted Performance Code:",predicted_performance)
 print("Recommended Career Path:",career)
 
+
 with open("student_performance_model.pkl","rb") as file:
-    loaded_model = pickle.load(file)
-loaded_prediction = loaded_model.predict(sample.to_frame().T)[0]    
-print("Prediction from loaded model:",loaded_prediction)
+    data = pickle.load(file)
+
+loaded_model = data["model"]
+
+loaded_prediction = loaded_model.predict(sample.to_frame().T)[0]
+print("Prediction from loaded model:", loaded_prediction)
