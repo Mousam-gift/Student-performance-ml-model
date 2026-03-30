@@ -2,6 +2,7 @@
 
 A machine learning project that predicts student academic performance and recommends career paths using Decision Tree and Random Forest classifiers.
 
+
 ---
 
 ## 📌 Table of Contents
